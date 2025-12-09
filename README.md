@@ -19,7 +19,6 @@ A Symfony console application that reads Excel assignment result sheets and calc
 1. Clone the repository:
    ```bash
    git clone https://github.com/renevanbakel/exam-grades
-   cd assessment
    ```
 
 2. Install dependencies:
