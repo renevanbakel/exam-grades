@@ -127,10 +127,6 @@ assessment/
 
 ## Development
 
-### Running Tests
-
-(Add test commands when tests are implemented)
-
 ### Code Style
 
 This project uses PHP 8.4+ features including:
@@ -138,8 +134,3 @@ This project uses PHP 8.4+ features including:
 - Readonly properties
 - Match expressions
 - Named arguments
-
-## License
-
-Proprietary
-
