@@ -68,6 +68,11 @@ class GradeCommand extends Command
 
     /**
      * Extracts all students from Excel and returns DTO list
+     * 
+     * @param array<int, array<int, mixed>> $data
+     * @param int $headerRows
+     * @param int $skipColumns
+     * @return StudentGradeDTO[]
      */
     private function processStudentScores(array $data, int $headerRows = 2, int $skipColumns = 1): array
     {
