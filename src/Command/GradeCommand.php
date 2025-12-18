@@ -46,58 +46,50 @@ class GradeCommand extends Command
         $data = $this->excelReaderService->readExcelFile($filePath);
 
         $io->text("Processing results for <info>" . count($data) . " rows</info>");
+
+        $table = $io->createTable();
+        $table->setHeaders(['Student ID', 'Score', 'Grade', 'Passed']);
         
-        $studentDtos = $this->processStudentScores($data);
-
-        $io->success('Grades successfully calculated!');
-        $io->newLine(2);
-
-        $io->table(
-            ['Student ID', 'Score', 'Grade', 'Passed'],
-            array_map(fn(StudentGradeDTO $dto) => [
+        foreach ($this->generateStudentScores($data) as $dto) {
+            $table->addRow([
                 $dto->studentId,
                 $dto->score,
                 $dto->grade,
-                $dto->passed ? 'YES 🎉' : 'NO ❌'
-            ], $studentDtos)
-        );
+                $dto->passed ? 'YES 🎉' : 'NO  ❌',
+            ]);
+        }
+
+        $table->render();
 
         return Command::SUCCESS;
     }
 
-
     /**
-     * Extracts all students from Excel and returns DTO list
-     * 
-     * @param array<int, array<int, mixed>> $data
-     * @param int $headerRows
-     * @param int $skipColumns
-     * @return StudentGradeDTO[]
+     * @return \Generator<StudentGradeDTO>
      */
-    private function processStudentScores(array $data, int $headerRows = 2, int $skipColumns = 1): array
+    private function generateStudentScores(array $data, int $headerRows = 2, int $skipColumns = 1): \Generator
     {
-        $maxScore = $this->calculateMaxScore($data);
+        $maxScore = 0;
 
-        $studentDtos = [];
+        if($maxScore === 0) {
+            echo 'Calculate';
+            $maxScore = $this->calculateMaxScore($data);
+        }
 
         foreach ($data as $rowIndex => $row) {
-            if ($rowIndex < $headerRows) continue; // Skip column headers + max score row
+            if ($rowIndex < $headerRows) continue;
 
             $score = array_sum(array_slice($row, $skipColumns));
-
             [$grade, $passed] = $this->gradeCalculator->calculateGradeAndPassStatus($score, $maxScore);
 
-            $studentDtos[] = new StudentGradeDto(
+            yield new StudentGradeDTO(
                 studentId: (string)$row[0],
                 score: $score,
                 grade: $grade,
                 passed: $passed
             );
         }
-
-        return $studentDtos;
     }
-
 
     /**
      * Second Excel row contains max score per question.
