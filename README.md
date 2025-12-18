@@ -31,18 +31,29 @@ A Symfony console application that reads Excel assignment result sheets and calc
 Run the command with the path to your Excel file:
 
 ```bash
-php bin/console app:calculate-grades <file>
+php bin/console app:calculate-grades <file> [--output=table|csv|json]
 ```
 
-### Example
+### Examples
 
 ```bash
+# Default table output to the console
 php bin/console app:calculate-grades data/Assignment.xlsx
+
+# Write results to output.csv
+php bin/console app:calculate-grades data/Assignment.xlsx --output=csv
+
+# Write results to output.json
+php bin/console app:calculate-grades data/Assignment.xlsx --output=json
 ```
 
-### Command Arguments
+### Command Arguments & Options
 
 - `file` (required): Path to the Excel file (e.g., `data/Assignment.xlsx`)
+- `--output` / `-o` (optional): Output format, one of:
+  - `table` (default): Pretty table printed to the console
+  - `csv`: Writes `output.csv` in the project root
+  - `json`: Writes `output.json` in the project root
 
 ## Excel File Format
 
@@ -124,8 +135,24 @@ assessment/
 - **symfony/console**: Console component for CLI commands
 - **symfony/framework-bundle**: Symfony framework bundle
 - **phpoffice/phpspreadsheet**: Excel file reading and writing
+- **phpunit/phpunit**: Unit testing framework (dev)
 
 ## Development
+
+### Running Tests
+
+From the project root:
+
+```bash
+php bin/phpunit
+```
+
+This will run the full test suite, including:
+
+- Grade calculation logic
+- Excel reader
+- Console command integration
+- Output handlers (table / CSV / JSON)
 
 ### Code Style
 
@@ -134,3 +161,12 @@ This project uses PHP 8.4+ features including:
 - Readonly properties
 - Match expressions
 - Named arguments
+
+## Changelog
+
+### Unreleased (compared to previous README)
+
+- Documented the `--output` / `-o` option for `app:calculate-grades` and the supported formats (`table`, `csv`, `json`).
+- Added examples for CSV and JSON export showing how `output.csv` and `output.json` are produced.
+- Documented how to run the automated test suite (`php bin/phpunit`) and noted the PHPUnit dev dependency.
+- Clarified that tests now cover grade calculation, Excel reading, command integration, and all output handlers.
