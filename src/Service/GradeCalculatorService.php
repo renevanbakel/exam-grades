@@ -6,9 +6,9 @@ namespace App\Service;
 
 class GradeCalculatorService
 {
-    private float $minScoreRatio = 0.2; // Score voor grade 1.0
-    private float $passScoreRatio = 0.7; // Score voor grade 5.5
-    private float $maxScoreRatio = 1.0; // Score voor grade 10.0
+    private float $minScoreRatio = 0.2; // Score for grade 1.0
+    private float $passScoreRatio = 0.7; // Score for grade 5.5
+    private float $maxScoreRatio = 1.0; // Score for grade 10.0
 
     private float $minGrade = 1.0;
     private float $passGrade = 5.5;
@@ -21,7 +21,7 @@ class GradeCalculatorService
         if ($ratio <= $this->minScoreRatio) {
             $grade = $this->minGrade;
         } elseif ($ratio < $this->passScoreRatio) {
-            // Interpoleer tussen minGrade en passGrade bij gebrek aan score voor ration tussen 0.2 en 0.7
+            // Interpolate between minGrade and passGrade due to the lack of score for ratio between 0.2 en 0.7
             $grade = $this->interpolate(
                 $ratio,
                 $this->minScoreRatio,
