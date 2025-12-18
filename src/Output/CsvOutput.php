@@ -12,15 +12,21 @@ class CsvOutput implements GradeOutputInterface
     {
         $handle = fopen($this->filePath, 'w');
 
-        fputcsv($handle, ['Student ID', 'Score', 'Grade', 'Passed']);
+        fputcsv($handle, ['Student ID', 'Score', 'Grade', 'Passed'], ',', '"', '\\');
 
         foreach ($students as $dto) {
-            fputcsv($handle, [
-                $dto->studentId,
-                $dto->score,
-                $dto->grade,
-                $dto->passed ? 'YES' : 'NO'
-            ]);
+            fputcsv(
+                $handle,
+                [
+                    $dto->studentId,
+                    $dto->score,
+                    $dto->grade,
+                    $dto->passed ? 'YES' : 'NO',
+                ],
+                ',',
+                '"',
+                '\\'
+            );
         }
 
         fclose($handle);
