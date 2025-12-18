@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\DTO\StudentGradeDTO;
+use App\Output\GradeOutputFactory;
 use App\Service\ExcelReaderService;
 use App\Service\GradeCalculatorService;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -22,7 +23,8 @@ class GradeCommand extends Command
 {
     public function __construct(
         private readonly ExcelReaderService $excelReaderService,
-        private readonly GradeCalculatorService $gradeCalculator
+        private readonly GradeCalculatorService $gradeCalculator,
+        private readonly GradeOutputFactory $outputFactory,
     ) {
         parent::__construct();
     }
@@ -34,7 +36,14 @@ class GradeCommand extends Command
                 'file',
                 InputArgument::REQUIRED,
                 'Path to the Excel file (e.g. data/Assignment.xlsx)'
-            );
+            )
+            ->addOption(
+                'output',
+                'o',
+                InputArgument::OPTIONAL,
+                'Output format: table, csv, json',
+                'table'
+            );    
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -47,19 +56,12 @@ class GradeCommand extends Command
 
         $io->text("Processing results for <info>" . count($data) . " rows</info>");
 
-        $table = $io->createTable();
-        $table->setHeaders(['Student ID', 'Score', 'Grade', 'Passed']);
-        
-        foreach ($this->generateStudentScores($data) as $dto) {
-            $table->addRow([
-                $dto->studentId,
-                $dto->score,
-                $dto->grade,
-                $dto->passed ? 'YES 🎉' : 'NO  ❌',
-            ]);
-        }
+        $outputFormat = $input->getOption('output');
 
-        $table->render();
+        $outputHandler = $this->outputFactory->create($outputFormat, $io);
+        $outputHandler->render(
+            $this->generateStudentScores($data)
+        );
 
         return Command::SUCCESS;
     }
@@ -72,7 +74,6 @@ class GradeCommand extends Command
         $maxScore = 0;
 
         if($maxScore === 0) {
-            echo 'Calculate';
             $maxScore = $this->calculateMaxScore($data);
         }
 
